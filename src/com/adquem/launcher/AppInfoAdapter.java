@@ -2,7 +2,6 @@ package com.adquem.launcher;
 
 import java.util.List;
 
-
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -13,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -63,13 +63,14 @@ public class AppInfoAdapter extends BaseAdapter {
  
         // load controls from layout resources
         ImageView ivAppIcon = (ImageView)v.findViewById(R.id.ivIcon);
+        ivAppIcon.setLayoutParams(new LayoutParams(20, 20));
         TextView tvAppName = (TextView)v.findViewById(R.id.tvName);
-        TextView tvPkgName = (TextView)v.findViewById(R.id.tvPack);
+        //TextView tvPkgName = (TextView)v.findViewById(R.id.tvPack);
  
         // set data to display
         ivAppIcon.setImageDrawable(entry.loadIcon(mPackManager));
         tvAppName.setText(entry.loadLabel(mPackManager));
-        tvPkgName.setText(entry.packageName);
+        //tvPkgName.setText(entry.packageName);
  
         // return view
         return v;

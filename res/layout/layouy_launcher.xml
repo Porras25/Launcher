@@ -42,6 +42,26 @@
                 android:layout_marginTop="10dp"
                 android:textColor="#2cabe2"
                 android:textSize="30sp" />
+            
+           <!--  <GridView 
+                android:id="@+id/VistaGrid"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:numColumns="auto_fit"
+    			android:verticalSpacing="10dp"
+    			android:horizontalSpacing="10dp"
+    			android:columnWidth="50dp"
+   			    android:stretchMode="columnWidth"
+    			android:gravity="center"               
+                ></GridView> -->
+                <Button
+            android:id="@+id/boton9"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+       />
+            
+            
         </LinearLayout>
 
         <LinearLayout

@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -30,10 +31,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AnalogClock;
 import android.widget.Button;
 import android.widget.DigitalClock;
-
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -192,6 +195,35 @@ AdquemPlayer vv;
 				startActivity(new Intent(Settings.ACTION_SETTINGS));
 			}
 		});
+        
+        final Button botonprueba = (Button)findViewById(R.id.boton9);
+        botonprueba.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				// TODO Auto-generated method stub
+				Toast toast = Toast.makeText(MainActivity.this, "Coloca tus apps preferidas", Toast.LENGTH_LONG);
+				toast.show();
+				startActivity(new Intent(MainActivity.this,Lanzadorgrid.class));
+				return false;
+			}
+		});
+        
+       /* final GridView gridLauncher = (GridView)findViewById(R.id.VistaGrid);
+        gridLauncher.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				Toast toast = Toast.makeText(MainActivity.this, "Coloca tus apps preferidas", Toast.LENGTH_LONG);
+				toast.show();
+				return true;
+			}
+		});
+        */
+        
+        
         
         
     }
