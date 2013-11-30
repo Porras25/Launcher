@@ -11,6 +11,8 @@ import android.provider.Settings;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.Menu;
@@ -32,23 +34,29 @@ public class MainActivity extends Activity {
 	ImageView IV_carrusel;
 	Timer longClickTimer;
 	AdquemPlayer vv;
-	
-	SQLiteDatabase myDB;
-	
+	SharedPreferences sp;
+	public SQLiteDatabase myDB;
+	Editor editor;
 	public static String DBNAME = "MyDATABASE";
 	public static String TABLE = "Table_Favoritos";
-	public static String TABLA2 = "Table_UserXp";
+	public static String TABLE2 = "Table_UserXp";
 	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-		myDB.openOrCreateDatabase(DBNAME,null);
-		myDB.execSQL("CREATE TABLE IF  NOT EXISTS "+ TABLE +" (ID INTEGER PRIMARY KEY, NAME TEXT, PAQUETE TEXT, ICON LONGBLOB);");
-		myDB.execSQL("CREATE TABLE IF  NOT EXISTS "+ TABLE2 +" (ID INTEGER PRIMARY KEY, NAME TEXT, PAQUETE TEXT, ICON LONGBLOB);");
-
+        sp= getSharedPreferences("LauncherPreferences", Context.MODE_PRIVATE);
+        editor = sp.edit();
+        if(sp.getBoolean("Primera_vez", true))
+        {
+		myDB=openOrCreateDatabase(DBNAME,Context.MODE_PRIVATE, null);
+		Log.i("Table1","CREATE TABLE IF  NOT EXISTS "+ TABLE +" (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAQUETE TEXT, ICON BLOB);");
+		myDB.execSQL("CREATE TABLE IF  NOT EXISTS "+ TABLE +" (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAQUETE TEXT, ICON BLOB);");
+		Log.i("Table1","CREATE TABLE IF  NOT EXISTS "+ TABLE2 +" (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAQUETE TEXT, ICON BLOB);");
+		myDB.execSQL("CREATE TABLE IF  NOT EXISTS "+ TABLE2 +" (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAQUETE TEXT, ICON BLOB);");
+        editor.putBoolean("Priemra_vez", false);
+        }
 		
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
 				.permitAll().build();
