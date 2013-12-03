@@ -7,7 +7,7 @@ public class Bean_AppFavoritas {
 	
 	public String nombre;
 	public String paquete;
-	public Blob icon;
+	public String icon;
 	/**
 	 * @return the id
 	 */
@@ -47,15 +47,16 @@ public class Bean_AppFavoritas {
 	/**
 	 * @return the icon
 	 */
-	public Blob getIcon() {
+	public String getIcon() {
 		return icon;
 	}
 	/**
 	 * @param icon the icon to set
 	 */
-	public void setIcon(Blob icon) {
+	public void setIcon(String icon) {
 		this.icon = icon;
 	}
+	
 	
 
 }

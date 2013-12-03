@@ -23,44 +23,50 @@
 
             <AnalogClock
                 android:id="@+id/analogClock1"
+                android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="5dp" />
 
             <DigitalClock
                 android:id="@+id/DigitalClock"
+                android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:textColor="#2cabe2"
-                android:textSize="30sp" />
-            
-           <!--  <GridView 
+                android:textSize="25sp" />
+
+            <GridView
                 android:id="@+id/VistaGrid"
+                android:layout_weight="2"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:numColumns="auto_fit"
-    			android:verticalSpacing="10dp"
-    			android:horizontalSpacing="10dp"
-    			android:columnWidth="50dp"
-   			    android:stretchMode="columnWidth"
-    			android:gravity="center"               
-                ></GridView> -->
-                <Button
-            android:id="@+id/boton9"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
-       />
+                android:layout_height="340dp"
+                android:background="@android:color/black"
+                android:columnWidth="50dp"
+                android:gravity="center"
+                android:horizontalSpacing="5dp"
+                android:numColumns="2"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="10dp" >
+            </GridView>
             
+            <Button
+            android:id="@+id/boton6"
+            android:layout_weight="1"
+            android:textSize="10dp"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:text="Recuperar Sesion" />
             
         </LinearLayout>
 
@@ -96,12 +102,12 @@
                     android:id="@+id/videoView1"
                     android:layout_width="500dp"
                     android:layout_height="500dp"
+                    android:layout_gravity="center"
                     android:layout_marginBottom="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
-                    android:layout_weight="1"
-                    android:layout_gravity="center" />
+                    android:layout_weight="1" />
             </LinearLayout>
 
             <WebView
@@ -161,6 +167,8 @@
             android:layout_height="100dp"
             android:layout_gravity="center"
             android:background="@drawable/settings" />
+        
+        
     </LinearLayout>
 
 </LinearLayout>

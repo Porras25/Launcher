@@ -1,9 +1,12 @@
 package com.adquem.launcher;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -13,19 +16,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AnalogClock;
 import android.widget.Button;
 import android.widget.DigitalClock;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -40,24 +49,48 @@ public class MainActivity extends Activity {
 	public static String DBNAME = "MyDATABASE";
 	public static String TABLE = "Table_Favoritos";
 	public static String TABLE2 = "Table_UserXp";
-	
+
+	public Cursor myCursor = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-        sp= getSharedPreferences("LauncherPreferences", Context.MODE_PRIVATE);
-        editor = sp.edit();
-        if(sp.getBoolean("Primera_vez", true))
-        {
-		myDB=openOrCreateDatabase(DBNAME,Context.MODE_PRIVATE, null);
-		Log.i("Table1","CREATE TABLE IF  NOT EXISTS "+ TABLE +" (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAQUETE TEXT, ICON BLOB);");
-		myDB.execSQL("CREATE TABLE IF  NOT EXISTS "+ TABLE +" (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAQUETE TEXT, ICON BLOB);");
-		Log.i("Table1","CREATE TABLE IF  NOT EXISTS "+ TABLE2 +" (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAQUETE TEXT, ICON BLOB);");
-		myDB.execSQL("CREATE TABLE IF  NOT EXISTS "+ TABLE2 +" (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAQUETE TEXT, ICON BLOB);");
-        editor.putBoolean("Priemra_vez", false);
-        }
-		
+
+		Bitmap bmp = BitmapFactory.decodeResource(getResources(),
+				R.drawable.googleplus2);
+
+		ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+		bmp.compress(Bitmap.CompressFormat.PNG, 100, bytestream);
+		byte[] bi = bytestream.toByteArray();
+		String tempo = Base64.encodeToString(bi, Base64.DEFAULT);
+
+		sp = getSharedPreferences("LauncherPreferences", Context.MODE_PRIVATE);
+		editor = sp.edit();
+		myDB = openOrCreateDatabase(DBNAME, Context.MODE_PRIVATE, null);
+		if (sp.getBoolean("Primera_vez", true)) {
+
+			Log.i("Table1",
+					"CREATE TABLE IF  NOT EXISTS "
+							+ TABLE
+							+ " (_id INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAQUETE TEXT, ICON TEXT);");
+			myDB.execSQL("CREATE TABLE IF  NOT EXISTS "
+					+ TABLE
+					+ " (_id INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAQUETE TEXT, ICON TEXT);");
+			Log.i("Table1",
+					"CREATE TABLE IF  NOT EXISTS "
+							+ TABLE2
+							+ " (_id INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAQUETE TEXT, ICON TEXT);");
+			myDB.execSQL("CREATE TABLE IF  NOT EXISTS "
+					+ TABLE2
+					+ " (_id INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PAQUETE TEXT, ICON TEXT);");
+			editor.putBoolean("Primera_vez", false);
+			myDB.execSQL("INSERT INTO " + TABLE
+					+ "(NAME,PAQUETE,ICON)VALUES('Mas','sinpaquete'," + "'"
+					+ tempo + "');");
+			editor.commit();
+		}
+
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
 				.permitAll().build();
 		StrictMode.setThreadPolicy(policy);
@@ -114,15 +147,43 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		// Uri uri = Uri.parse("http://www.youtube.com/watch?v=SlmqnRZepD0");
-		// vv.setVideoURI(uri);
-
 		vv.requestFocus();
 		vv.start();
 
-		WebView webview1 = (WebView) findViewById(R.id.vistaweb1);
-		webview1.loadUrl("https://sitioseguro.cablevision.net.mx/");
 
+		
+		WebView webview1 = (WebView) findViewById(R.id.vistaweb1);
+		if (isNetworkAvailable()) {			
+			webview1.loadUrl("https://sitioseguro.cablevision.net.mx/");
+		}else {
+			//webview1.getSettings().setJavaScriptEnabled(true);
+			webview1.setClickable(true);
+	        webview1.loadUrl("file:///android_asset/Index.html");	 
+	        webview1.setOnTouchListener(new OnTouchListener() {
+				
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					// TODO Auto-generated method stub
+					startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+					return false;
+				}
+			});
+	     /*   webview1.setOnClickListener(new OnClickListener() {				
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					startActivity(new Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS));
+				}
+			});*/
+		}
+		
+	
+
+		
+		
+		
+		
+		
 		DigitalClock dc = (DigitalClock) findViewById(R.id.DigitalClock);
 		AnalogClock ac = (AnalogClock) findViewById(R.id.analogClock1);
 
@@ -194,33 +255,96 @@ public class MainActivity extends Activity {
 				startActivity(new Intent(Settings.ACTION_SETTINGS));
 			}
 		});
-
-		final Button botonprueba = (Button) findViewById(R.id.boton9);
-		botonprueba.setOnLongClickListener(new OnLongClickListener() {
-
+		
+		final Button botonUsuario = (Button)findViewById(R.id.boton6);
+		botonUsuario.setOnClickListener(new OnClickListener() {
+			
 			@Override
-			public boolean onLongClick(View v) {
+			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Toast toast = Toast.makeText(MainActivity.this,
-						"Coloca tus apps preferidas", Toast.LENGTH_LONG);
-				toast.show();
-				startActivity(new Intent(MainActivity.this, Lanzadorgrid.class));
-				return false;
+				Cursor i = myDB.rawQuery("SELECT * FROM " + TABLE2 + ";",null);
+				
+				if (i.moveToFirst()) {
+					do {
+						Intent userIntent = getPackageManager()
+								.getLaunchIntentForPackage(i.getString(i.getColumnIndex(i.getColumnName(2))));
+						startActivity(userIntent);
+						
+					} while (i.moveToNext());
+					
+				}
+				
+				
+				myDB.execSQL("DELETE FROM "+TABLE2 +";");
+				Toast toastUser = Toast.makeText(MainActivity.this,
+						"Lanzando ultimas apps abiertas", Toast.LENGTH_LONG);
+				toastUser.show();			
+				
 			}
 		});
+		
+		
+		Log.i("Query Cursor", "SELECT * FROM " + TABLE + ";");
+		myCursor = myDB.rawQuery("SELECT * FROM " + TABLE + ";", null);
 
-		/*
-		 * final GridView gridLauncher = (GridView)findViewById(R.id.VistaGrid);
-		 * gridLauncher.setOnItemLongClickListener(new OnItemLongClickListener()
-		 * {
-		 * 
-		 * @Override public boolean onItemLongClick(AdapterView<?> arg0, View
-		 * arg1, int arg2, long arg3) { // TODO Auto-generated method stub Toast
-		 * toast = Toast.makeText(MainActivity.this,
-		 * "Coloca tus apps preferidas", Toast.LENGTH_LONG); toast.show();
-		 * return true; } });
-		 */
+		final GridView gridLauncher = (GridView) findViewById(R.id.VistaGrid);
+		MyCursorAdapter myCursorAdapter = new MyCursorAdapter(getBaseContext(),
+				myCursor);
 
+		if (myCursor.requery()) {
+			myCursorAdapter.notifyDataSetChanged();
+			gridLauncher.setAdapter(myCursorAdapter);
+		}
+		gridLauncher.setAdapter(myCursorAdapter);
+
+		gridLauncher.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+		
+//				MyBaseAdapter infoApps = (MyBaseAdapter)arg0.getAdapter();
+//			
+//				Bean_AppFavoritas appselecc = (Bean_AppFavoritas)infoApps.getItem(arg2);
+
+				if (arg1.getTag().toString().equalsIgnoreCase("sinpaquete")) {
+					Toast toast = Toast.makeText(MainActivity.this,
+							"Coloca tus apps preferidas", Toast.LENGTH_LONG);
+					toast.show();
+					startActivity(new Intent(MainActivity.this,
+							Lanzadorgrid.class));
+
+				} else {
+
+					Log.i("package name", arg1.getTag().toString());
+					Intent LaunchIntent = getPackageManager()
+							.getLaunchIntentForPackage(arg1.getTag().toString());
+					startActivity(LaunchIntent);
+					
+					
+					Log.i("Query", "INSERT INTO " + TABLE2
+							+ "(NAME,PAQUETE,ICON)VALUES(" + "'"
+							+ "NOMBRE" + "'" + ","
+							+ "'" + arg1.getTag().toString()
+							+ "'" + "," + "'" + "ICONO" + "'" + ");");
+					myDB.execSQL("INSERT INTO "
+							+ TABLE2 + "(NAME,PAQUETE,ICON)VALUES("
+							+ "'" + "NOMBRE" + "'"
+							+ "," + "'"
+							+ arg1.getTag().toString() + "'"
+							+ "," + "'" + "ICONO" + "'" + ");");				
+					
+				}
+
+			}
+		});
+	}
+	private boolean isNetworkAvailable() {
+	    ConnectivityManager connectivityManager 
+	          = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+	    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 	}
 
 	@Override
@@ -234,6 +358,7 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		vv.start();
+
 		super.onResume();
 	}
 
